@@ -1,11 +1,9 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_predict
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.impute import SimpleImputer
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
 
 data = pd.read_csv('C:/Users/LIUYI/Desktop/data/traffic-prediction-dataset.csv')
@@ -17,7 +15,9 @@ data.index = time_index
 
 data.columns = ['Cross1', 'Cross2', 'Cross3', 'Cross4', 'Cross5', 'Cross6']
 
-data = data.resample('5T').sum().fillna(0)
+data = data[['Cross1', 'Cross2', 'Cross3', 'Cross4']]
+
+data = data.resample('5T').sum().fillna(0)  # 按5分钟间隔重采样并填充缺失值
 
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data)
@@ -61,6 +61,7 @@ def r_squared_custom(y_true, y_pred):
     return 1 - (ss_residual / ss_total)
 
 for i in range(4):
+    # 构建Gradient Boosting Regressor模型
     model = GradientBoostingRegressor(random_state=0)
     model.fit(X_train, y_train[:, i])
 
